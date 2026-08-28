@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ninenine": {
+      "command": "npx",
+      "args": ["-y", "ninenine-mcp-unofficial"]
+    }
+  }
+}

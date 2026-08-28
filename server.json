@@ -1,0 +1,43 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.davidmosiah/ninenine-mcp",
+  "description": "Unofficial local-first 99 passenger MCP: 99Pop/99Moto estimates, ride history and tracking. Request-ride is fail-closed.",
+  "repository": {
+    "url": "https://github.com/davidmosiah/ninenine-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "ninenine-mcp-unofficial",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "NINENINE_ACCESS_TOKEN",
+          "description": "Personal 99 passenger ticket. Prefer `ninenine-mcp-unofficial auth --token` so this never sits in client config.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "NINENINE_ALLOW_MUTATIONS",
+          "description": "Set true to allow request-ride and cancel. Default false (never pays).",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "NINENINE_PRIVACY_MODE",
+          "description": "summary | structured | raw. Default summary (status/ETA/category; redacts GPS).",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

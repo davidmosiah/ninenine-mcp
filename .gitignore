@@ -1,0 +1,9 @@
+coverage/
+dist/
+.DS_Store
+.ninenine-mcp/
+.env
+.env.*
+*.log
+node_modules/
+.mcpregistry_*_token

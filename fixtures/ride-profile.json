@@ -1,0 +1,24 @@
+{
+  "profile": {
+    "email": "passenger@example.com",
+    "phone": "+558599999999",
+    "street": "Rua Exemplo 123",
+    "address": "Aldeota, Fortaleza",
+    "last_four": "4242",
+    "lastFour": "4242"
+  },
+  "payment": {
+    "last_four": "1111",
+    "card_number": "4111111111111111"
+  },
+  "ride": {
+    "id": "ride-1",
+    "status": "arriving",
+    "eta": 4,
+    "category": "99Pop",
+    "lat": -3.7319,
+    "lng": -38.5267,
+    "polyline": "encoded-gps-blob",
+    "driver_phone": "+558588888888"
+  }
+}

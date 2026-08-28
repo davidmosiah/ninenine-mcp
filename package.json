@@ -1,0 +1,76 @@
+{
+  "name": "ninenine-mcp-unofficial",
+  "version": "0.1.0",
+  "description": "Unofficial local-first 99 passenger MCP for fare estimates (99Pop + 99Moto), ride history and tracking. Never pays unless NINENINE_ALLOW_MUTATIONS and explicit_user_intent are both set.",
+  "type": "module",
+  "bin": {
+    "ninenine-mcp-unofficial": "dist/index.js",
+    "ninenine-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+    "server.json",
+    "examples",
+    "llms.txt"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "smoke": "node scripts/smoke-tools.mjs",
+    "test:mutation-gate": "node scripts/test-mutation-gate.mjs",
+    "test:redaction": "node scripts/test-redaction.mjs",
+    "test:handlers": "node scripts/test-handlers.mjs",
+    "test:client-paths": "node scripts/test-client-paths.mjs",
+    "test:path-allowlist": "node scripts/test-path-allowlist.mjs",
+    "test:http-origin": "node scripts/test-http-origin.mjs",
+    "test:secret-scan": "node scripts/secret-scan.mjs",
+    "test:cli": "node scripts/test-cli.mjs",
+    "test": "npm run typecheck && npm run build && npm run smoke && npm run test:mutation-gate && npm run test:redaction && npm run test:handlers && npm run test:client-paths && npm run test:path-allowlist && npm run test:http-origin && npm run test:cli && npm run test:secret-scan",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "99",
+    "ninenine",
+    "ride-hailing",
+    "local-first",
+    "ai-agents"
+  ],
+  "author": "David Mosiah",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.20.6",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidmosiah/ninenine-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidmosiah/ninenine-mcp/issues",
+    "email": "support@delx.ai"
+  },
+  "homepage": "https://github.com/davidmosiah/ninenine-mcp",
+  "mcpName": "io.github.davidmosiah/ninenine-mcp",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js"
+}

@@ -1,0 +1,21 @@
+# ninenine-mcp-unofficial
+
+Unofficial local-first MCP for personal 99 passenger rides (Brazil). Not 99Food, 99Pay, 99Entrega, or corp B2B.
+
+Install:
+- npx -y ninenine-mcp-unofficial setup
+- npx -y ninenine-mcp-unofficial auth --from-header "Bearer …"  (DevTools Authorization)
+- npx -y ninenine-mcp-unofficial doctor
+
+Stdio (never set NINENINE_ALLOW_MUTATIONS in the snippet):
+{ "mcpServers": { "ninenine": { "command": "npx", "args": ["-y", "ninenine-mcp-unofficial"] } } }
+
+Default: read-only. Never pays.
+Charge only if NINENINE_ALLOW_MUTATIONS is enabled AND explicit_user_intent is true. Guest tokens cannot charge.
+Redacts street, phone, email, GPS/latlng polylines (status / ETA / category only).
+
+Read: ninenine_estimate (99Pop + 99Moto), ninenine_list_addresses, ninenine_ride_history, ninenine_track_ride, ninenine_active_ride.
+Gated pay: ninenine_request_ride, ninenine_cancel_ride.
+Intent only: ninenine_logout.
+
+HTTP optional: loopback 127.0.0.1 + Origin allowlist. Tokens in ~/.ninenine-mcp/tokens.json (0600), never in git/tarball.
