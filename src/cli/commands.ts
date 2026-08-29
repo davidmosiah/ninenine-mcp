@@ -5,6 +5,7 @@ import { peekConfig } from "../services/config.js";
 import { buildConnectionStatus } from "../services/connection-status.js";
 import { TokenStore } from "../services/token-store.js";
 import { normalizeAccessToken } from "../services/auth-token.js";
+import { TOOL_CALLS } from "../tools/ninenine-tools.js";
 
 export async function runCliCommand(args: string[]): Promise<number | undefined> {
   const [command, ...rest] = args;
@@ -12,6 +13,7 @@ export async function runCliCommand(args: string[]): Promise<number | undefined>
   if (command === "setup") return runSetup(rest);
   if (command === "auth" || command === "login") return runAuth(rest);
   if (command === "doctor" || command === "status") return runDoctor(rest);
+  if (command === "call") return runCall(rest);
   if (command === "version" || command === "--version" || command === "-v") {
     console.log(SERVER_VERSION);
     return 0;
@@ -91,6 +93,34 @@ async function runDoctor(args: string[]): Promise<number> {
   return args.includes("--strict") && !status.ok ? 1 : 0;
 }
 
+async function runCall(args: string[]): Promise<number> {
+  const name = args[0];
+  if (!name || name.startsWith("-")) {
+    console.error("Usage: ninenine-mcp-unofficial call <tool> [--json '{...}']");
+    console.error(`Tools: ${Object.keys(TOOL_CALLS).join(", ")}`);
+    return 1;
+  }
+  const fn = TOOL_CALLS[name];
+  if (!fn) {
+    console.error(`Unknown tool: ${name}`);
+    console.error(`Tools: ${Object.keys(TOOL_CALLS).join(", ")}`);
+    return 1;
+  }
+  const jsonIdx = args.indexOf("--json");
+  let input: Record<string, unknown> = {};
+  if (jsonIdx >= 0) {
+    const raw = args[jsonIdx + 1];
+    if (!raw) {
+      console.error("--json requires an object string");
+      return 1;
+    }
+    input = JSON.parse(raw) as Record<string, unknown>;
+  }
+  const result = await fn(input);
+  process.stdout.write(`${JSON.stringify(result.structuredContent ?? { ok: !result.isError }, null, 2)}\n`);
+  return result.isError ? 1 : 0;
+}
+
 function printHelp(): void {
   console.log(`ninenine-mcp-unofficial ${SERVER_VERSION}
 Unofficial local-first 99 passenger MCP. Never pays unless NINENINE_ALLOW_MUTATIONS and explicit_user_intent.
@@ -100,7 +130,8 @@ Commands:
   auth --token <token>              store personal access token (0600)
   auth --from-header "Bearer …"     same, from DevTools Authorization
   doctor [--json] [--strict]
+  call <tool> [--json '{...}']      same tools as MCP (skill path; gates identical)
   version
 
-Default transport: stdio. Optional: --http (loopback only).`);
+Default transport: stdio MCP. Skill: skill/SKILL.md. Optional: --http (loopback only).`);
 }

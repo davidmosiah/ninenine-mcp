@@ -10,6 +10,9 @@ Install:
 Stdio (never set NINENINE_ALLOW_MUTATIONS in the snippet):
 { "mcpServers": { "ninenine": { "command": "npx", "args": ["-y", "ninenine-mcp-unofficial"] } } }
 
+Skill (same gates, no MCP client required): skill/SKILL.md
+npx -y ninenine-mcp-unofficial call <tool> --json '{...}'
+
 Default: read-only. Never pays.
 Charge only if NINENINE_ALLOW_MUTATIONS is enabled AND explicit_user_intent is true. Guest tokens cannot charge.
 Redacts street, phone, email, GPS/latlng polylines (status / ETA / category only).

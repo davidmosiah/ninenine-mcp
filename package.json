@@ -1,6 +1,6 @@
 {
   "name": "ninenine-mcp-unofficial",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unofficial local-first 99 passenger MCP for fare estimates (99Pop + 99Moto), ride history and tracking. Never pays unless NINENINE_ALLOW_MUTATIONS and explicit_user_intent are both set.",
   "type": "module",
   "bin": {
@@ -17,7 +17,8 @@
     "CONTRIBUTING.md",
     "server.json",
     "examples",
-    "llms.txt"
+    "llms.txt",
+    "skill"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

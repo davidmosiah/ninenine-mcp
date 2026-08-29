@@ -40,6 +40,16 @@ Stdio snippet (Claude Desktop, Cursor, Grok Bot). Do **not** set mutations in th
 
 See [examples/claude-desktop.json](examples/claude-desktop.json) and [examples/grok-bot.md](examples/grok-bot.md).
 
+## Skill or MCP
+
+Same package, two doors. MCP registers tools on stdio/HTTP. The [skill](skill/SKILL.md) is the workflow (estimate → compare Pop/Moto → stop) and can drive the **same** tools through the CLI when the client has no MCP:
+
+```bash
+npx -y ninenine-mcp-unofficial call ninenine_estimate --json '{"from_lat":-3.73,"from_lng":-38.52,"to_lat":-3.74,"to_lng":-38.54}'
+```
+
+Gates are identical. Copy `skill/SKILL.md` into your agent skills dir (`~/.agents/skills/ninenine/` or Claude/Grok equivalent).
+
 ## Tools
 
 | Kind | Tools |

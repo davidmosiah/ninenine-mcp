@@ -7,6 +7,8 @@ Unofficial local-first 99 passenger MCP. Personal ride hail for David / Life / G
 - `npm ci`
 - `npm test` (typecheck, build, smoke, mutation gate, redaction, handlers, secret-scan)
 - `npx ninenine-mcp-unofficial doctor`
+- `npx ninenine-mcp-unofficial call ninenine_capabilities --json '{}'`
+- Skill: `skill/SKILL.md` (copy into the agent's skills dir; do not duplicate the API client)
 
 ## Rules
 

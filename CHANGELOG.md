@@ -1,3 +1,7 @@
+## 0.1.1 - 2026-08-28
+
+Skill layer ships in-package (`skill/SKILL.md`). Agents can use MCP tools **or** `call <tool> --json` on the same binary; mutation gates are identical. Default docs still do not contain a copyable mutations assignment.
+
 ## 0.1.0 - 2026-08-28
 
 Unofficial local-first 99 **passenger** MCP (stdio + optional loopback HTTP).

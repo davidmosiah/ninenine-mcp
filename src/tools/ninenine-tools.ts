@@ -21,6 +21,28 @@ import {
   handleRideHistory,
   handleTrackRide
 } from "../services/handlers.js";
+import type { ToolResponse } from "../types.js";
+
+type CallFn = (args: Record<string, unknown>) => Promise<ToolResponse>;
+const call =
+  <T,>(fn: (input: T) => Promise<ToolResponse>): CallFn =>
+  (args) =>
+    fn(args as T);
+
+/** Same handlers as MCP tools — CLI `call` uses this so skill-only clients hit the identical gates. */
+export const TOOL_CALLS: Record<string, CallFn> = {
+  ninenine_connection_status: call(handleConnectionStatus),
+  ninenine_capabilities: call(handleCapabilities),
+  ninenine_privacy_audit: call(handlePrivacyAudit),
+  ninenine_estimate: call(handleEstimate),
+  ninenine_list_addresses: call(handleListAddresses),
+  ninenine_ride_history: call(handleRideHistory),
+  ninenine_track_ride: call(handleTrackRide),
+  ninenine_active_ride: call(handleTrackRide),
+  ninenine_request_ride: call(handleRequestRide),
+  ninenine_cancel_ride: call(handleCancelRide),
+  ninenine_logout: call(handleLogout)
+};
 
 const readOnly = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true } as const;
 const gatedWrite = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true } as const;
