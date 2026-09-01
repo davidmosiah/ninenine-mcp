@@ -54,9 +54,9 @@ Gates are identical. Copy `skill/SKILL.md` into your agent skills dir (`~/.agent
 
 | Kind | Tools |
 | --- | --- |
-| Read · fares | `ninenine_estimate` (always 99Pop + 99Moto) |
+| Read · fares | `ninenine_estimate` (always 99Pop + 99Moto), `ninenine_multi_estimate`, `ninenine_ride_categories` |
 | Read · account | `ninenine_list_addresses`, `ninenine_ride_history` |
-| Read · live | `ninenine_track_ride`, `ninenine_active_ride` |
+| Read · live | `ninenine_track_ride`, `ninenine_driver_track` (GPS redacted), `ninenine_active_ride` |
 | Meta | `ninenine_connection_status`, `ninenine_capabilities`, `ninenine_privacy_audit` |
 | Gated pay (mutations **and** intent) | `ninenine_request_ride`, `ninenine_cancel_ride` |
 | Intent only | `ninenine_logout` |

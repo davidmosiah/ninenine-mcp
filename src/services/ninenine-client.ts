@@ -53,6 +53,24 @@ export class NinenineClient {
     private readonly fetchImpl: FetchLike = fetch
   ) {}
 
+  async multiEstimate(input: EstimateInput): Promise<unknown> {
+    return this.requestForm(PATHS.multiEstimate, {
+      ...this.pointFields(input),
+      product_id: RIDE_CATEGORIES.pop.id,
+      category: RIDE_CATEGORIES.pop.label
+    });
+  }
+
+  async rideCategories(): Promise<unknown> {
+    const config = await this.requestForm(PATHS.config, { location_country: "BR", lang: "pt-BR" });
+    return {
+      unofficial: true,
+      shipped: RIDE_CATEGORIES,
+      extra_from_config: extractCategories(config),
+      note: "Dedicated payment/receipt/schedule/rate/tip/driver URLs 404 HTML. Extra categories only if pGetConfig returns them."
+    };
+  }
+
   async estimate(input: EstimateInput): Promise<unknown> {
     const pop = await this.requestForm(PATHS.multiEstimate, {
       ...this.pointFields(input),
@@ -233,6 +251,17 @@ export function consumerRequestUrl(apiBase: string, path: string): string {
     );
   }
   return url;
+}
+
+function extractCategories(payload: unknown): unknown {
+  if (!payload || typeof payload !== "object") return [];
+  const record = payload as Record<string, unknown>;
+  for (const key of ["products", "product_list", "categories", "ride_categories", "car_level"]) {
+    if (Array.isArray(record[key])) return record[key];
+  }
+  const nested = record.data;
+  if (nested && typeof nested === "object") return extractCategories(nested);
+  return [];
 }
 
 function extractAddresses(payload: unknown): unknown {

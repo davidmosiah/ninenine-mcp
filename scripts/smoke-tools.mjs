@@ -10,11 +10,14 @@ const expected = [
   "ninenine_cancel_ride",
   "ninenine_capabilities",
   "ninenine_connection_status",
+  "ninenine_driver_track",
   "ninenine_estimate",
   "ninenine_list_addresses",
   "ninenine_logout",
+  "ninenine_multi_estimate",
   "ninenine_privacy_audit",
   "ninenine_request_ride",
+  "ninenine_ride_categories",
   "ninenine_ride_history",
   "ninenine_track_ride"
 ];

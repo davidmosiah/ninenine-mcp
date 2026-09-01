@@ -17,7 +17,8 @@ Default: read-only. Never pays.
 Charge only if NINENINE_ALLOW_MUTATIONS is enabled AND explicit_user_intent is true. Guest tokens cannot charge.
 Redacts street, phone, email, GPS/latlng polylines (status / ETA / category only).
 
-Read: ninenine_estimate (99Pop + 99Moto), ninenine_list_addresses, ninenine_ride_history, ninenine_track_ride, ninenine_active_ride.
+Read: ninenine_estimate (99Pop + 99Moto), ninenine_multi_estimate, ninenine_ride_categories, ninenine_list_addresses, ninenine_ride_history, ninenine_track_ride, ninenine_driver_track, ninenine_active_ride.
+Not in surface: 99Food, 99Pay, 99Entrega.
 Gated pay: ninenine_request_ride, ninenine_cancel_ride.
 Intent only: ninenine_logout.
 

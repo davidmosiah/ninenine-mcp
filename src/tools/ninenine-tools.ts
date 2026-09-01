@@ -13,11 +13,14 @@ import {
   handleCancelRide,
   handleCapabilities,
   handleConnectionStatus,
+  handleDriverTrack,
   handleEstimate,
   handleListAddresses,
   handleLogout,
+  handleMultiEstimate,
   handlePrivacyAudit,
   handleRequestRide,
+  handleRideCategories,
   handleRideHistory,
   handleTrackRide
 } from "../services/handlers.js";
@@ -35,9 +38,12 @@ export const TOOL_CALLS: Record<string, CallFn> = {
   ninenine_capabilities: call(handleCapabilities),
   ninenine_privacy_audit: call(handlePrivacyAudit),
   ninenine_estimate: call(handleEstimate),
+  ninenine_multi_estimate: call(handleMultiEstimate),
+  ninenine_ride_categories: call(handleRideCategories),
   ninenine_list_addresses: call(handleListAddresses),
   ninenine_ride_history: call(handleRideHistory),
   ninenine_track_ride: call(handleTrackRide),
+  ninenine_driver_track: call(handleDriverTrack),
   ninenine_active_ride: call(handleTrackRide),
   ninenine_request_ride: call(handleRequestRide),
   ninenine_cancel_ride: call(handleCancelRide),
@@ -79,6 +85,28 @@ export function registerNinenineTools(server: McpServer): void {
       annotations: { ...readOnly, openWorldHint: false }
     },
     async (args) => handlePrivacyAudit(args)
+  );
+
+  server.registerTool(
+    "ninenine_multi_estimate",
+    {
+      title: "99 multi-estimate (pMultiEstimatePrice)",
+      description: "Read-only POST pMultiEstimatePrice (JSON 200 errno without token). Does not request a car.",
+      inputSchema: EstimateInputSchema.shape,
+      annotations: readOnly
+    },
+    async (args) => handleMultiEstimate(args)
+  );
+
+  server.registerTool(
+    "ninenine_ride_categories",
+    {
+      title: "99 ride categories",
+      description: "Shipped 99Pop + 99Moto plus any extra product list in pGetConfig. Not 99Food/99Pay.",
+      inputSchema: ReadInputSchema.shape,
+      annotations: readOnly
+    },
+    async (args) => handleRideCategories(args)
   );
 
   server.registerTool(
@@ -125,6 +153,17 @@ export function registerNinenineTools(server: McpServer): void {
       annotations: readOnly
     },
     async (args) => handleTrackRide(args)
+  );
+
+  server.registerTool(
+    "ninenine_driver_track",
+    {
+      title: "99 driver track (GPS redacted)",
+      description: "Dedicated driver URLs 404 HTML. Reads pOrderStatus; lat/lng redacted.",
+      inputSchema: ActiveRideInputSchema.shape,
+      annotations: readOnly
+    },
+    async (args) => handleDriverTrack(args)
   );
 
   server.registerTool(

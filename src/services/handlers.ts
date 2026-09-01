@@ -70,6 +70,67 @@ export async function handlePrivacyAudit(input: { response_format?: ResponseForm
   });
 }
 
+export async function handleMultiEstimate(
+  input: {
+    from_lat: number;
+    from_lng: number;
+    to_lat: number;
+    to_lng: number;
+    privacy_mode?: PrivacyMode;
+    response_format?: ResponseFormat;
+  },
+  extra: HandlerDeps = {}
+) {
+  const { config, client } = deps(extra);
+  try {
+    const raw = await client.multiEstimate(input);
+    const payload = applyPrivacy({ unofficial: true, multi_estimate: raw }, input.privacy_mode ?? config.privacyMode);
+    return wrap(payload, input.response_format ?? "markdown", "99 multi-estimate", {
+      unofficial: true,
+      path: "pMultiEstimatePrice"
+    });
+  } catch (error) {
+    return gateError(error);
+  }
+}
+
+export async function handleRideCategories(
+  input: { privacy_mode?: PrivacyMode; response_format?: ResponseFormat } = {},
+  extra: HandlerDeps = {}
+) {
+  const { config, client } = deps(extra);
+  try {
+    const raw = await client.rideCategories();
+    const payload = applyPrivacy({ unofficial: true, categories: raw }, input.privacy_mode ?? config.privacyMode);
+    return wrap(payload, input.response_format ?? "markdown", "99 ride categories", {
+      unofficial: true,
+      shipped: "99Pop, 99Moto"
+    });
+  } catch (error) {
+    return gateError(error);
+  }
+}
+
+export async function handleDriverTrack(
+  input: { ride_id?: string; privacy_mode?: PrivacyMode; response_format?: ResponseFormat },
+  extra: HandlerDeps = {}
+) {
+  const { config, client } = deps(extra);
+  try {
+    const raw = await client.trackRide(input.ride_id);
+    const payload = applyPrivacy(
+      { unofficial: true, driver_track: raw, note: "Dedicated pDriverLocation 404 HTML; this is pOrderStatus with GPS redacted." },
+      input.privacy_mode ?? config.privacyMode
+    );
+    return wrap(payload, input.response_format ?? "markdown", "99 driver track", {
+      unofficial: true,
+      gps_redacted: true
+    });
+  } catch (error) {
+    return gateError(error);
+  }
+}
+
 export async function handleEstimate(
   input: {
     from_lat: number;

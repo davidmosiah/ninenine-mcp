@@ -46,7 +46,7 @@ Token is a captured passenger `Authorization` to `api.99taxis.mobi`, stored at `
 ## Loop
 
 1. `ninenine_connection_status` (or `doctor --json`). Expect `unofficial` and `never_pays_by_default`.
-2. `ninenine_estimate` with origin/destination. Always show **99Pop and 99Moto** with price/ETA.
+2. `ninenine_estimate` with origin/destination. Always show **99Pop and 99Moto** with price/ETA. Optional `ninenine_multi_estimate`. Never request a car.
 3. History / track only if asked. GPS, street, phone stay redacted.
 4. **Stop.** Do not call `ninenine_request_ride` or `ninenine_cancel_ride` unless the user clearly asked to request/cancel **this** ride. If the tool returns `USER_ACTION_REQUIRED`, report that and stop. Do not invent env flags.
 

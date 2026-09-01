@@ -1,3 +1,7 @@
+## 0.1.2 - 2026-09-01
+
+`ninenine_multi_estimate`, `ninenine_ride_categories` (pGetConfig extras), `ninenine_driver_track` (pOrderStatus, GPS redacted). Honest gaps for payment/receipt/schedule/rate/tip/dedicated driver URLs (404 HTML). Surface still excludes 99Food/99Pay.
+
 ## 0.1.1 - 2026-08-28
 
 Skill layer ships in-package (`skill/SKILL.md`). Agents can use MCP tools **or** `call <tool> --json` on the same binary; mutation gates are identical. Default docs still do not contain a copyable mutations assignment.
