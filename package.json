@@ -32,9 +32,10 @@
     "test:client-paths": "node scripts/test-client-paths.mjs",
     "test:path-allowlist": "node scripts/test-path-allowlist.mjs",
     "test:http-origin": "node scripts/test-http-origin.mjs",
+    "test:http-json": "node --experimental-vm-modules scripts/test-http-json.mjs",
     "test:secret-scan": "node scripts/secret-scan.mjs",
     "test:cli": "node scripts/test-cli.mjs",
-    "test": "npm run typecheck && npm run build && npm run smoke && npm run test:mutation-gate && npm run test:redaction && npm run test:handlers && npm run test:client-paths && npm run test:path-allowlist && npm run test:http-origin && npm run test:cli && npm run test:secret-scan",
+    "test": "npm run typecheck && npm run build && npm run smoke && npm run test:mutation-gate && npm run test:redaction && npm run test:handlers && npm run test:client-paths && npm run test:path-allowlist && npm run test:http-origin && npm run test:http-json && npm run test:cli && npm run test:secret-scan",
     "prepublishOnly": "npm test"
   },
   "keywords": [
