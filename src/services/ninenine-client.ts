@@ -1,3 +1,4 @@
+import { readResponseText, ResponseBodyError } from "./response-body.js";
 import { randomUUID } from "node:crypto";
 import { dirname } from "node:path";
 import { promises as fs } from "node:fs";
@@ -198,9 +199,10 @@ export class NinenineClient {
         method: "POST",
         headers,
         body: encoded.toString(),
+        redirect: "error",
         signal: controller.signal
       });
-      const text = await response.text();
+      const text = await readResponseText(response, controller.signal);
       let parsed: unknown = text;
       try {
         parsed = text ? JSON.parse(text) : null;
@@ -218,7 +220,7 @@ export class NinenineClient {
     } catch (error) {
       if (error instanceof NinenineClientError) throw error;
       throw new NinenineClientError(
-        `99 request failed: ${(error as Error).message}`,
+        error instanceof ResponseBodyError ? error.message : "99 request failed",
         undefined,
         "NINENINE_UPSTREAM_UNAVAILABLE"
       );
@@ -239,13 +241,17 @@ export class NinenineClient {
 export function consumerRequestUrl(apiBase: string, path: string): string {
   try {
     assertAllowedConsumerPath(path);
+    const base = new URL(apiBase);
+    if (base.pathname !== "/" || base.search || base.hash) {
+      throw new Error("PATH_NOT_ALLOWED: API base must be a bare HTTPS origin");
+    }
   } catch (error) {
     throw new NinenineClientError((error as Error).message, undefined, "PATH_NOT_ALLOWED");
   }
   const url = apiBase.replace(/\/$/, "") + path;
   if (!isAllowedNinenineHost(url)) {
     throw new NinenineClientError(
-      `HOST_NOT_ALLOWED: refusing unofficial 99 host ${apiBase}`,
+      "HOST_NOT_ALLOWED: consumer base must use an allowed HTTPS origin",
       undefined,
       "PATH_NOT_ALLOWED"
     );

@@ -20,7 +20,8 @@ const ALLOWED_HOSTS = new Set(
 
 export function isAllowedNinenineHost(url: string): boolean {
   try {
-    return ALLOWED_HOSTS.has(new URL(url).hostname);
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" && !parsed.port && !parsed.username && !parsed.password && !parsed.hash && ALLOWED_HOSTS.has(parsed.hostname);
   } catch {
     return false;
   }

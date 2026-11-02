@@ -63,3 +63,25 @@ const unknown = await run(["call", "ninenine_not_a_tool"]);
 assert.equal(unknown.code, 1);
 
 console.log(JSON.stringify({ ok: true, suite: "cli", from_header: true, token_0600: true, doctor: true, call: true }, null, 2));
+
+for (const name of ["constructor", "__proto__", "toString"]) {
+  const inherited = await run(["call", name, "--json", "{}"]);
+  assert.equal(inherited.code, 1);
+  assert.match(inherited.stderr, /Unknown tool/);
+}
+const invalidObject = await run(["call", "ninenine_capabilities", "--json", "null"]);
+assert.equal(invalidObject.code, 1);
+assert.match(invalidObject.stderr, /INVALID_INPUT/);
+
+const malformed = await run(["call", "ninenine_capabilities", "--json", "synthetic-sensitive-token-not-json"]);
+assert.equal(malformed.code, 1);
+assert.match(malformed.stderr, /INVALID_INPUT: --json must contain valid JSON/);
+assert.doesNotMatch(malformed.stderr + malformed.stdout, /synthetic-sensitive|synthetic-/);
+
+const { writeFileSync: overwriteFixture } = await import('node:fs');
+overwriteFixture(tokenPath, "synthetic-sensitive-token-not-json");
+const corruptToken = await run(["doctor", "--json"]);
+assert.equal(corruptToken.code, 1);
+assert.match(corruptToken.stderr, /Stored token file contains invalid JSON/);
+assert.doesNotMatch(corruptToken.stderr + corruptToken.stdout, /synthetic-sensitive|synthetic-/);
+assert.equal(readFileSync(tokenPath, "utf8"), "synthetic-sensitive-token-not-json");

@@ -12,7 +12,7 @@ export function createServer(): McpServer {
   const server = new McpServer({
     name: SERVER_NAME,
     version: SERVER_VERSION
-  });
+  }, { maxToolInputElements: 10_000 });
   registerNinenineTools(server);
   return server;
 }
@@ -45,10 +45,21 @@ async function runHttp(): Promise<void> {
       res.end();
       return;
     }
+    const maxBodyBytes = 1024 * 1024;
     const chunks: Buffer[] = [];
+    let bodyBytes = 0;
     let body: unknown;
     try {
-      for await (const chunk of req) chunks.push(chunk as Buffer);
+      for await (const chunk of req) {
+        const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+        bodyBytes += bytes.length;
+        if (bodyBytes > maxBodyBytes) {
+          res.writeHead(413, { "content-type": "application/json" });
+          res.end(JSON.stringify({ error: "request_too_large" }));
+          return;
+        }
+        chunks.push(bytes);
+      }
       body = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
     } catch {
       res.writeHead(400, { "content-type": "application/json" });

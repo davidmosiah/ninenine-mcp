@@ -35,8 +35,11 @@
     "test:http-json": "node --experimental-vm-modules scripts/test-http-json.mjs",
     "test:secret-scan": "node scripts/secret-scan.mjs",
     "test:cli": "node scripts/test-cli.mjs",
-    "test": "npm run typecheck && npm run build && npm run smoke && npm run test:mutation-gate && npm run test:redaction && npm run test:handlers && npm run test:client-paths && npm run test:path-allowlist && npm run test:http-origin && npm run test:http-json && npm run test:cli && npm run test:secret-scan",
-    "prepublishOnly": "npm test"
+    "test": "npm run typecheck && npm run build && npm run smoke && npm run test:mutation-gate && npm run test:redaction && npm run test:handlers && npm run test:client-paths && npm run test:path-allowlist && npm run test:http-origin && npm run test:http-json && npm run test:cli && npm run test:secret-scan && npm run test:token-atomic && npm run test:response-body && npm run test:cli-validation",
+    "prepublishOnly": "npm test",
+    "test:token-atomic": "node scripts/test-token-atomic.mjs",
+    "test:response-body": "node scripts/test-response-body.mjs",
+    "test:cli-validation": "node scripts/test-cli-validation.mjs"
   },
   "keywords": [
     "mcp",
@@ -50,8 +53,8 @@
   "author": "David Mosiah",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "zod": "^4.4.1"
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
