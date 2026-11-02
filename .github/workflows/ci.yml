@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Frozen install, tests and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.22.1'
+      - name: Install frozen dependencies, run offline fixtures, audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/commerce-ci-home"
+          clean_env=(env -i "PATH=$PATH" "HOME=$RUNNER_TEMP/commerce-ci-home" "CI=true")
+          "${clean_env[@]}" npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          "${clean_env[@]}" npm test
+          "${clean_env[@]}" npm audit --audit-level=low --registry=https://registry.npmjs.org
