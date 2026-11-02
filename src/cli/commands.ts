@@ -100,7 +100,7 @@ async function runCall(args: string[]): Promise<number> {
     console.error(`Tools: ${Object.keys(TOOL_CALLS).join(", ")}`);
     return 1;
   }
-  const fn = TOOL_CALLS[name];
+  const fn = Object.hasOwn(TOOL_CALLS, name) ? TOOL_CALLS[name] : undefined;
   if (!fn) {
     console.error(`Unknown tool: ${name}`);
     console.error(`Tools: ${Object.keys(TOOL_CALLS).join(", ")}`);
@@ -114,7 +114,12 @@ async function runCall(args: string[]): Promise<number> {
       console.error("--json requires an object string");
       return 1;
     }
-    input = JSON.parse(raw) as Record<string, unknown>;
+    if (Buffer.byteLength(raw, "utf8") > 1024 * 1024) throw new Error("INVALID_INPUT: JSON arguments exceed 1 MiB");
+    try {
+      input = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      throw new Error("INVALID_INPUT: --json must contain valid JSON");
+    }
   }
   const result = await fn(input);
   process.stdout.write(`${JSON.stringify(result.structuredContent ?? { ok: !result.isError }, null, 2)}\n`);

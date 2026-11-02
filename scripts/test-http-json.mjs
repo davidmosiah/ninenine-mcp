@@ -21,7 +21,10 @@ function synthetic(exports) {
 }
 
 class FakeServer {
-  constructor() { servers += 1; }
+  constructor(_info, options) {
+    assert.equal(options.maxToolInputElements, 10_000);
+    servers += 1;
+  }
   async connect() {}
   async close() {}
 }
@@ -60,12 +63,15 @@ await entrypoint.link((specifier) => {
 await entrypoint.evaluate();
 assert.equal(typeof callback, "function");
 
-async function request(body, { streamError = false } = {}) {
+async function request(body, { streamError = false, chunkSize = Infinity } = {}) {
   const req = {
     method: "POST", url: "/mcp", headers: {},
     async *[Symbol.asyncIterator]() {
       if (streamError) throw new Error("synthetic aborted stream");
-      yield Buffer.from(body);
+      const bytes = Buffer.from(body);
+      for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+        yield bytes.subarray(offset, offset + chunkSize);
+      }
     }
   };
   const res = {
@@ -91,6 +97,12 @@ const aborted = await request("", { streamError: true });
 assert.equal(aborted.status, 400);
 assert.equal(dispatched.length, 0);
 
+const oversized = await request(" ".repeat(1024 * 1024 + 1));
+assert.equal(oversized.status, 413);
+assert.equal(servers, 0);
+assert.equal(transports, 0);
+assert.equal(dispatched.length, 0);
+
 const valid = { jsonrpc: "2.0", id: 7, method: "tools/list" };
 const res = await request(JSON.stringify(valid));
 assert.equal(res.status, 200, "a request following malformed JSON must still work");
@@ -102,3 +114,11 @@ const empty = await request("");
 assert.equal(empty.status, 200, "preserve existing empty-body fallback");
 assert.deepEqual(JSON.parse(JSON.stringify(dispatched[1])), {});
 console.log("HTTP JSON: malformed/aborted bodies contained; valid and following requests preserved (no sockets)");
+
+const limitBody = JSON.stringify({ jsonrpc: "2.0", method: "tools/list", id: 9 });
+const boundary = await request(limitBody.padEnd(1024 * 1024, " "), { chunkSize: 65536 });
+assert.equal(boundary.status, 200, "exactly 1 MiB is accepted across chunks");
+const countBefore = dispatched.length;
+const chunkedOverflow = await request(limitBody.padEnd(1024 * 1024 + 1, " "), { chunkSize: 65536 });
+assert.equal(chunkedOverflow.status, 413);
+assert.equal(dispatched.length, countBefore, "chunked overflow never reaches SDK");

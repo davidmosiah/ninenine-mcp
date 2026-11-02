@@ -1,3 +1,4 @@
+import { assertToolInputBudget } from "../services/tool-input-budget.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   ActiveRideInputSchema,
@@ -28,26 +29,30 @@ import type { ToolResponse } from "../types.js";
 
 type CallFn = (args: Record<string, unknown>) => Promise<ToolResponse>;
 const call =
-  <T,>(fn: (input: T) => Promise<ToolResponse>): CallFn =>
-  (args) =>
-    fn(args as T);
+  <T,>(schema: { safeParse(input: unknown): { success: true; data: T } | { success: false } }, fn: (input: T) => Promise<ToolResponse>): CallFn =>
+  async (args) => {
+    assertToolInputBudget(args);
+    const parsed = schema.safeParse(args);
+    if (!parsed.success) throw new Error("INVALID_INPUT: arguments do not match the tool schema");
+    return fn(parsed.data);
+  };
 
 /** Same handlers as MCP tools — CLI `call` uses this so skill-only clients hit the identical gates. */
 export const TOOL_CALLS: Record<string, CallFn> = {
-  ninenine_connection_status: call(handleConnectionStatus),
-  ninenine_capabilities: call(handleCapabilities),
-  ninenine_privacy_audit: call(handlePrivacyAudit),
-  ninenine_estimate: call(handleEstimate),
-  ninenine_multi_estimate: call(handleMultiEstimate),
-  ninenine_ride_categories: call(handleRideCategories),
-  ninenine_list_addresses: call(handleListAddresses),
-  ninenine_ride_history: call(handleRideHistory),
-  ninenine_track_ride: call(handleTrackRide),
-  ninenine_driver_track: call(handleDriverTrack),
-  ninenine_active_ride: call(handleTrackRide),
-  ninenine_request_ride: call(handleRequestRide),
-  ninenine_cancel_ride: call(handleCancelRide),
-  ninenine_logout: call(handleLogout)
+  ninenine_connection_status: call(ResponseOnlyInputSchema, handleConnectionStatus),
+  ninenine_capabilities: call(ResponseOnlyInputSchema, handleCapabilities),
+  ninenine_privacy_audit: call(ResponseOnlyInputSchema, handlePrivacyAudit),
+  ninenine_estimate: call(EstimateInputSchema, handleEstimate),
+  ninenine_multi_estimate: call(EstimateInputSchema, handleMultiEstimate),
+  ninenine_ride_categories: call(ReadInputSchema, handleRideCategories),
+  ninenine_list_addresses: call(ReadInputSchema, handleListAddresses),
+  ninenine_ride_history: call(ReadInputSchema, handleRideHistory),
+  ninenine_track_ride: call(RideIdInputSchema, handleTrackRide),
+  ninenine_driver_track: call(ActiveRideInputSchema, handleDriverTrack),
+  ninenine_active_ride: call(ActiveRideInputSchema, handleTrackRide),
+  ninenine_request_ride: call(RequestRideInputSchema, handleRequestRide),
+  ninenine_cancel_ride: call(CancelRideInputSchema, handleCancelRide),
+  ninenine_logout: call(LogoutInputSchema, handleLogout)
 };
 
 const readOnly = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true } as const;

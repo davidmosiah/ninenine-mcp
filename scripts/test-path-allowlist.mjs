@@ -31,3 +31,14 @@ assert.throws(
 );
 
 console.log(JSON.stringify({ ok: true, suite: "path-allowlist" }, null, 2));
+
+// Reject insecure/custom-port/userinfo origins before resolving any token.
+const firstPath = Object.values(PATHS)[0];
+for (const bad of [base.replace("https:", "http:"), `${base}:444`, base.replace("https://", "https://user:pass@"), `${base}#fragment`]) {
+  assert.equal(isAllowedNinenineHost(bad), false, bad);
+  assert.throws(() => consumerRequestUrl(bad, firstPath));
+}
+for (const bad of [`${base}/prefix`, `${base}?query=value`, `${base}#fragment`]) {
+  assert.throws(() => consumerRequestUrl(bad, firstPath));
+}
+assert.equal(isAllowedNinenineHost(`${base}:443`), true);
